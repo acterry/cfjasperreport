@@ -11,7 +11,6 @@
 		dsn=			{required:false,type:"string",default:""},
 		datasource=			{required:false,type:"string",default:""},
 		query=			{required:false,type:"Object"},
-		json=			{required:false,type:"string"},
 		params=			{required:false,type:"struct"},
 		sqlstring=			{required:false,type:"string",default:""},
 		datafile=			{required:false,type:"any",default:""},
@@ -87,7 +86,6 @@
 		<cfargument name="download" default="no" />
 		<cfargument name="newquery" default="" />
 		<cfargument name="query" />
-		<cfargument name="json" type="string" required="no" default="" />
 		<cfargument name="resourcebundle" default="" />
 		<cfargument name="locale" default="US" />
 		<cfargument name="localeLanguage" default="ENGLISH" />
@@ -113,9 +111,6 @@
 				var LocaleOb = getLibraryLoader().create("java.util.Locale");
 				var JRParameter = getLibraryLoader().create("net.sf.jasperreports.engine.JRParameter");
 				var FileOb = getLibraryLoader().create("java.io.File");
-				var jsonBuffer = "";
-				var jsonInputStream = "";
-
 
 				// we get "Cannot load com.apple.laf.AquaLookAndFeel" if we don't set crossPlat on OSX at least
 				var UIManager = getLibraryLoader().create("javax.swing.UIManager");
@@ -227,18 +222,7 @@
 						catch(JRException e){
 							throw(type="cfjasperreport.error", message=e.printStackTrace());
 						}
-					} else if (len(arguments.json) and isJSON(arguments.json)){
-						try{
-							drs = getLibraryLoader().create("net.sf.jasperreports.engine.data.JsonDataSource");
-							jsonBuffer = getLibraryLoader().create("java.lang.String").init(toString(arguments.json)).getBytes();
-							jsonInputStream = getLibraryLoader().create("java.io.ByteArrayInputStream").init(jsonBuffer);
-							drs.init(jsonInputStream);
-							jasperPrint = jasperFillManager.fillReport(jasperReport, parameters, drs);
-						}
-						catch(JRException e){
-							throw(type="cfjasperreport.error", message=e.printStackTrace());
-						}
-					}else {
+					} else {
 						try{
 							jasperPrint = jasperFillManager.fillReport(jasperReport, parameters);
 						}
